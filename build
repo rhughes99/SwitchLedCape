@@ -1,0 +1,4 @@
+#!/bin/sh
+pasm -b CapeTestPru.p
+#gcc CapeTestController.c -o CapeTestController -lpthread -lprussdrv
+gcc CapeTestController.c -o CapeTestController -lprussdrv
