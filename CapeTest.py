@@ -13,29 +13,14 @@ GPIO.setup("P8_15", GPIO.IN)
 oldSwitchState12 = 1
 oldSwitchState15 = 1
 
-GPIO.output("P8_10", GPIO.HIGH)
-GPIO.output("P8_11", GPIO.LOW)
-time.sleep(1.0)
+for x in range(10)
+	GPIO.output("P8_10", GPIO.HIGH)
+	GPIO.output("P8_11", GPIO.LOW)
+	time.sleep(1.0)
 
-GPIO.output("P8_10", GPIO.LOW)
-GPIO.output("P8_11", GPIO.HIGH)
-time.sleep(1.0)
-
-GPIO.output("P8_10", GPIO.HIGH)
-GPIO.output("P8_11", GPIO.LOW)
-time.sleep(1.0)
-
-GPIO.output("P8_10", GPIO.LOW)
-GPIO.output("P8_11", GPIO.HIGH)
-time.sleep(1.0)
-
-GPIO.output("P8_10", GPIO.HIGH)
-GPIO.output("P8_11", GPIO.LOW)
-time.sleep(1.0)
-
-GPIO.output("P8_10", GPIO.LOW)
-GPIO.output("P8_11", GPIO.HIGH)
-time.sleep(1.0)
+	GPIO.output("P8_10", GPIO.LOW)
+	GPIO.output("P8_11", GPIO.HIGH)
+	time.sleep(1.0)
 
 GPIO.output("P8_11", GPIO.LOW)
 
