@@ -1,6 +1,6 @@
 /*	Switch LED Cape Controller
 	Based on Molloy's Listing 13-3, ledButton.c
-	09/15/2016
+	09/16/2016
 */
 
 //#include <signal.h>
@@ -9,7 +9,7 @@
 //#include <unistd.h>
 #include <prussdrv.h>
 #include <pruss_intc_mapping.h>
-#include "BBBiolib.h"
+#include "../BBBIOlib/BBBio_lib/BBBiolib.h"
 
 //______________________________________
 int main (void)
@@ -49,7 +49,7 @@ int main (void)
 	{
 		pin_high(8,10);
 		iolib_delay_ms(500);
-		pin_low(8, 10)
+		pin_low(8, 10);
 		iolib_delay_ms(500);
 	}
 	pin_high(8,10);				// LED on till PRU is done
