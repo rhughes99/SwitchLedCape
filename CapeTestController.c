@@ -1,6 +1,6 @@
 /*	Switch LED Cape Controller
 	Based on Molloy's Listing 13-3, ledButton.c
-	09/16/2016
+	09/17/2016
 */
 
 //#include <signal.h>
@@ -9,7 +9,7 @@
 //#include <unistd.h>
 #include <prussdrv.h>
 #include <pruss_intc_mapping.h>
-#include "../BBBIOlib/BBBio_lib/BBBiolib.h"
+#include "BBBiolib.h"
 
 //______________________________________
 int main (void)
