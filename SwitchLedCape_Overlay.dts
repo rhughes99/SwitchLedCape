@@ -1,6 +1,6 @@
 /* Device Tree Overlay for playing with switches and LEDs on Switch LED Cape
 *  This overlay is for GPIOs and PRU 0
-*  09/18/2016
+*  09/19/2016
 */
 /dts-v1/;
 /plugin/;
@@ -20,8 +20,8 @@
 
          gpio_pins: pinmux_gpio_pins {         // GPIO pin modes
             pinctrl-single,pins = <
-               0x030 0x0F  //    LED P8_10 MODE 7 | OUT | DIS 0000 1111=0x0F
-               0x098 0x2F  // SWITCH P8_12 MODE 7 |  IN | DIS 0010 1111=0x2F
+               0x098 0x0F  //    LED P8_10 MODE 7 | OUT | DIS 0000 1111=0x0F
+               0x030 0x2F  // SWITCH P8_12 MODE 7 |  IN | DIS 0010 1111=0x2F
             >;
          };
          pru_pru_pins: pinmux_pru_pru_pins {   // PRU pin modes
