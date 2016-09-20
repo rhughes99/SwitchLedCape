@@ -1,6 +1,6 @@
 /* Device Tree Overlay for playing with switches and LEDs on Switch LED Cape
 *  This overlay is for GPIOs and PRU 0
-*  09/19/2016
+*  09/20/2016
 */
 /dts-v1/;
 /plugin/;
@@ -12,19 +12,13 @@
    version = "00A0";
 
    /* This overlay uses the following resources */
-   exclusive-use = "P8.10", "P8.11", "P8.12", "P8.15", "pru0";
+   exclusive-use = "P8.11", "P8.15", "pru0";
 
    fragment@0 {
       target = <&am33xx_pinmux>;
       __overlay__ {
 
-         gpio_pins: pinmux_gpio_pins {         // GPIO pin modes
-            pinctrl-single,pins = <
-               0x098 0x0F  //    LED P8_10 MODE 7 | OUT | DIS 0000 1111=0x0F
-               0x030 0x2F  // SWITCH P8_12 MODE 7 |  IN | DIS 0010 1111=0x2F
-            >;
-         };
-         pru_pru_pins: pinmux_pru_pru_pins {   // PRU pin modes
+      pru_pru_pins: pinmux_pru_pru_pins {            // PRU pin modes
             pinctrl-single,pins = <
                0x034 0x0E  //    LED  P8_11 pr1_pru0_pru_r30_15, MODE 6 | OUT | DIS 0000 1110=0x0E
                0x03C 0x2E  // SWITCH  P8_15 pr1_pru0_pru_r31_15, MODE 6 |  IN | DIS 0010 1110=0x2E
@@ -39,18 +33,6 @@
          status = "okay";
          pinctrl-names = "default";
          pinctrl-0 = <&pru_pru_pins>;
-      };
-   };
-
-   fragment2 {         // Enable GPIOs
-      target = <&ocp>;
-      __0verlay___ {
-         gpio_helper {
-            compatible = "gpio-of-helper";
-            status = "okay";
-            pinctrl-names = "default";
-            pinctrl-0 = <&gpio_pins>;
-         };
       };
    };
 };

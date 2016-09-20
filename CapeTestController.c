@@ -2,7 +2,7 @@
 	Based on Molloy's Listing 13-3, ledButton.c
 	GPIO P8.12 input (switch)
 	GPIO P8,10 output (LED)
-	09/18/2016
+	09/20/2016
 */
 
 //#include <signal.h>
@@ -11,7 +11,6 @@
 //#include <unistd.h>
 #include <prussdrv.h>
 #include <pruss_intc_mapping.h>
-#include "BBBiolib.h"
 
 //______________________________________
 int main (void)
@@ -25,11 +24,7 @@ int main (void)
 	}
 
 	// Initialize Controller GPIO
-	iolib_init();
-	iolib_setdir(8,12, BBBIO_DIR_IN);				// P8-12, switch, normally high
-	iolib_setdir(8,10, BBBIO_DIR_OUT);				// P8-10, LED
-
-	printf("Got here 1\n");
+	
 
 	// Initialize structure used by prussdrv_pruintc_intc
 	tpruss_intc_initdata pruss_intc_initdata = PRUSS_INTC_INITDATA;
