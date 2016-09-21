@@ -69,7 +69,6 @@ int main (void)
 //	prussdrv_map_prumem(PRUSS0_PRU1_DATARAM, &pru1DataMemory);
 
 	prussdrv_exec_program(0, "./CapeTestPru.bin");		// load and execute PRU 0 program
-
 	printf("CapeTestController running...\n");
 
 	// Blink Controller LED a couple of times
@@ -83,7 +82,7 @@ int main (void)
 	gpioSetValue(68, ON);								// LED on till PRU is done
 
 	// Wait for event completion from PRU
-	n = prussdrv_pru_wait_event(PRU_EVTOUT_0);
+	n = prussdrv_pru_wait_event(PRU_EVTOUT_0);			// BLOCKING!?
 	printf("PRU indicating program complete; event number= %d\n", n);
 	gpioSetValue(68, OFF);
 
