@@ -2,12 +2,12 @@
 	Based on Molloy's Listing 13-3, ledButton.c
 	GPIO P8.12 input (switch)
 	GPIO P8,10 output (LED)
-	09/20/2016
+	09/21/2016
 */
 
 #include <errno.h>
 #include <fcntl.h>
-#include <pool.h>
+//#include <pool.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,7 +19,7 @@
 
 #define SYSFS_GPIO_DIR "/sys/class/gpio/"
 #define POLL_TIMEOUT (3 * 1000)							// 3 seconds
-#define MAX_BUFF 64
+#define MAX_BUF 64
 
 enum GPIO_DIRECTION	{INPUT, OUTPUT};
 enum GPIO_VALUE		{OFF, ON};
@@ -49,9 +49,9 @@ int main (void)
 
 	// Initialize Controller GPIO: P8.12 = input, P8.10 = output
 	gpioExport(44);										// P8.12 = gpio1[12] = 1*32+12 = 44
-	gpioSetDir(44, INPUT);	
+	gpioSetDir(44, INPUT);
 
-	gpioExport(68);		// P8.10 = gpio2[04] = 2*32+ 4 = 68
+	gpioExport(68);						// P8.10 = gpio2[04] = 2*32+ 4 = 68
 	gpioSetDir(68, OUTPUT);
 	gpioSetValue(68, OFF);
 
@@ -77,7 +77,7 @@ int main (void)
 	{
 		gpioSetValue(68, ON);
 		nanosleep(&tim, NULL);
-		gpioSetValue(68, OFF;
+		gpioSetValue(68, OFF);
 		nanosleep(&tim, NULL);
 	}
 	gpioSetValue(68, ON);								// LED on till PRU is done
