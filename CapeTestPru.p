@@ -1,7 +1,7 @@
 // PRUSS program for Switch LED Cape
 // This is for PRU 0
 // Based on Molloy's Listing 13-2, ledButton.p
-// 09/15/2016
+// 09/21/2016
 
 .origin 0							// offset of start of program in PRU memory
 .entrypoint START					// program entry point
@@ -41,7 +41,7 @@
 
 //__________________________________________________________
 START:
-	SET		LED							// LED on
+	CLR		LED							// LED on
 	
 	MOV		r0, DELAY
 DELAYON:
