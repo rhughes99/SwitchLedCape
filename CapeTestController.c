@@ -1,13 +1,12 @@
 /*	Switch LED Cape Controller
 	Based on Molloy's Listing 13-3, ledButton.c
-	GPIO P8.12 input (switch)
+	GPIO P8.12 input  (switch)
 	GPIO P8,10 output (LED)
 	09/21/2016
 */
 
 #include <errno.h>
 #include <fcntl.h>
-//#include <pool.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,8 +17,10 @@
 #include <pruss_intc_mapping.h>
 
 #define SYSFS_GPIO_DIR "/sys/class/gpio/"
-#define POLL_TIMEOUT (3 * 1000)							// 3 seconds
-#define MAX_BUF 64
+#define BUFFER_SIZE 64
+
+#define SWITCH 44			// P8.12 = gpio1[12] = 1*32 +12 = 44
+#define LED 68				// P8.10 = gpio2[04] = 2*32 + 4 = 68
 
 enum GPIO_DIRECTION	{INPUT, OUTPUT};
 enum GPIO_VALUE		{OFF, ON};
@@ -36,7 +37,8 @@ int gpioFdClose(int fd);
 //______________________________________
 int main (void)
 {
-	int i, n;
+	int i, eventNum;
+	unsigned int switchState;
 	struct timespec tim;
 	tim.tv_sec = 0;
 	tim.tv_nsec = 500000000L;
@@ -48,13 +50,15 @@ int main (void)
 	}
 
 	// Initialize Controller GPIO: P8.12 = input, P8.10 = output
-	gpioExport(44);										// P8.12 = gpio1[12] = 1*32+12 = 44
-	gpioSetDir(44, INPUT);
+	gpioExport(SWITCH);
+	gpioSetDir(SWITCH, INPUT);
 
-	gpioExport(68);						// P8.10 = gpio2[04] = 2*32+ 4 = 68
-	gpioSetDir(68, OUTPUT);
-	gpioSetValue(68, OFF);
+	gpioExport(LED);
+	gpioSetDir(LED, OUTPUT);
+	gpioSetValue(LED, OFF);
 
+	gpioGetValue(SWITCH, &switchState);
+	
 	// Initialize structure used by prussdrv_pruintc_intc
 	tpruss_intc_initdata pruss_intc_initdata = PRUSS_INTC_INITDATA;
 
@@ -74,19 +78,17 @@ int main (void)
 	// Blink Controller LED a couple of times
 	for (i=0; i<10; i++)
 	{
-		gpioSetValue(68, ON);
+		gpioSetValue(LED, ON);
 		nanosleep(&tim, NULL);
-		gpioSetValue(68, OFF);
+		gpioSetValue(LED, OFF);
 		nanosleep(&tim, NULL);
 	}
-	gpioSetValue(68, ON);								// LED on till PRU is done
+	gpioSetValue(LED, ON);								// LED on till PRU is done
 
 	// Wait for event completion from PRU
-	n = prussdrv_pru_wait_event(PRU_EVTOUT_0);			// BLOCKING!?
-	printf("PRU indicating program complete; event number= %d\n", n);
-	gpioSetValue(68, OFF);
-
-//	printf("---Shutting down...\n");
+	eventNum = prussdrv_pru_wait_event(PRU_EVTOUT_0);			// BLOCKING!?
+	printf("PRU indicating program complete; event number= %d\n", eventNum);
+	gpioSetValue(LED, OFF);								// LED off means PRU is done
 
 	prussdrv_pru_disable(0);							// disable PRU and close memory mappings
 	prussdrv_exit();
@@ -97,7 +99,7 @@ int main (void)
 int gpioExport(unsigned int gpio)
 {
 	int fd, len;
-	char buf[MAX_BUF];
+	char buf[BUFFER_SIZE];
 
 	fd = open(SYSFS_GPIO_DIR "/export", O_WRONLY);
 	if (fd < 0)
@@ -115,7 +117,7 @@ int gpioExport(unsigned int gpio)
 int gpioUnexport(unsigned int gpio)
 {
 	int fd, len;
-	char buf[MAX_BUF];
+	char buf[BUFFER_SIZE];
 
 	fd = open(SYSFS_GPIO_DIR "/unexport", O_WRONLY);
 	if (fd < 0)
@@ -133,10 +135,9 @@ int gpioUnexport(unsigned int gpio)
 int gpioSetDir(unsigned int gpio, unsigned int out_flag)
 {
 	int fd;
-	char buf[MAX_BUF];
+	char buf[BUFFER_SIZE];
  
 	snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR  "/gpio%d/direction", gpio);
-
 	fd = open(buf, O_WRONLY);
 	if (fd < 0)
 	{
@@ -157,10 +158,9 @@ int gpioSetDir(unsigned int gpio, unsigned int out_flag)
 int gpioSetValue(unsigned int gpio, unsigned int value)
 {
 	int fd;
-	char buf[MAX_BUF];
+	char buf[BUFFER_SIZE];
  
 	snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
-
 	fd = open(buf, O_WRONLY);
 	if (fd < 0)
 	{
@@ -181,11 +181,10 @@ int gpioSetValue(unsigned int gpio, unsigned int value)
 int gpioGetValue(unsigned int gpio, unsigned int *value)
 {
 	int fd;
-	char buf[MAX_BUF];
+	char buf[BUFFER_SIZE];
 	char ch;
 
 	snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
-
 	fd = open(buf, O_RDONLY);
 	if (fd < 0)
 	{
@@ -208,11 +207,10 @@ int gpioGetValue(unsigned int gpio, unsigned int *value)
 //______________________________________
 int gpioSetEdge(unsigned int gpio, char *edge)
 {
-	int fd, len;
-	char buf[MAX_BUF];
+	int fd;
+	char buf[BUFFER_SIZE];
 
-	len = snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/edge", gpio);
-
+	snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/edge", gpio);
 	fd = open(buf, O_WRONLY);
 	if (fd < 0)
 	{
@@ -226,13 +224,12 @@ int gpioSetEdge(unsigned int gpio, char *edge)
 }
 
 //______________________________________
-int gpioFd_Open(unsigned int gpio)
+int gpioFdOpen(unsigned int gpio)
 {
 	int fd;
-	char buf[MAX_BUF];
+	char buf[BUFFER_SIZE];
 
 	snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
-
 	fd = open(buf, O_RDONLY | O_NONBLOCK );
 	if (fd < 0)
 		perror("gpio/fd_open");
